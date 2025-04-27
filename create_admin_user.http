@@ -1,0 +1,10 @@
+### Create Admin User
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+
+{
+  "username": "rtexido",
+  "password": "admin123",
+  "email": "rtexido@example.com",
+  "roles": ["ROLE_ADMIN"]
+}

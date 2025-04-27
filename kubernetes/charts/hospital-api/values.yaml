@@ -1,0 +1,118 @@
+# Default values for hospital-api.
+# This is a YAML-formatted file.
+
+replicaCount: 3
+
+image:
+  repository: ${DOCKER_HUB_USERNAME}/hospital-api
+  tag: latest
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+  hosts:
+    - host: api.hospital.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: hospital-api-prod-tls
+      hosts:
+        - api.hospital.example.com
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: prod
+
+secrets:
+  create: true
+  name: hospital-api-secrets
+  data:
+    jdbcUrl: "jdbc:postgresql://hospital-db.prod.svc.cluster.local:5432/hospitaldb"
+    dbUsername: "hospital_app"
+    dbPassword: "secure-prod-password"
+    adminUsername: "admin"
+    adminPassword: "secure-prod-admin-password"
+
+livenessProbe:
+  httpGet:
+    path: /api/management/health
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 20
+
+readinessProbe:
+  httpGet:
+    path: /api/management/health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+# ArgoCD Rollout configuration
+rollout:
+  enabled: true
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: {duration: 5m}
+        - setWeight: 40
+        - pause: {duration: 5m}
+        - setWeight: 60
+        - pause: {duration: 5m}
+        - setWeight: 80
+        - pause: {duration: 5m}
+      analysis:
+        templates:
+          - templateName: success-rate
+        args:
+          - name: service-name
+            value: hospital-api-metrics

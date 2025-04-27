@@ -1,0 +1,184 @@
+### Variables globales
+@baseUrl = http://localhost:8080/api/v1
+@authToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJydGV4aWRvIiwiaWF0IjoxNzQ1Njk2NDk2LCJleHAiOjE3NDU3ODI4OTZ9.JSJ63Bq3Y4zBqmaW5ZKf6PIBq17VGgGldoX7C9QWwZk
+
+### Autenticación
+
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "rtexido",
+  "password": "admin123"
+}
+
+### Refresh Token
+POST {{baseUrl}}/auth/refresh-token
+Content-Type: application/json
+
+{
+  "username": "doctor1",
+  "password": ""
+}
+
+### Gestión de Citas (Appointments)
+
+# Crear una nueva cita
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "patientId": "123e4567-e89b-12d3-a456-426614174000",
+  "doctorId": "123e4567-e89b-12d3-a456-426614174001",
+  "startTime": "2023-06-15T10:00:00",
+  "endTime": "2023-06-15T11:00:00",
+  "reason": "Annual check-up"
+}
+
+### Obtener todas las citas
+GET {{baseUrl}}/appointments
+Authorization: Bearer {{authToken}}
+
+### Obtener cita por ID
+GET {{baseUrl}}/appointments/123e4567-e89b-12d3-a456-426614174004
+Authorization: Bearer {{authToken}}
+
+### Actualizar cita
+PUT {{baseUrl}}/appointments/123e4567-e89b-12d3-a456-426614174004
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "startTime": "2023-06-15T10:30:00",
+  "endTime": "2023-06-15T11:30:00",
+  "reason": "Annual check-up",
+  "notes": "Patient has a history of high blood pressure"
+}
+
+### Cancelar cita
+PUT {{baseUrl}}/appointments/123e4567-e89b-12d3-a456-426614174004/cancel
+Authorization: Bearer {{authToken}}
+
+### Gestión de Personal Médico (Medical Staff)
+
+# Crear nuevo personal médico
+POST {{baseUrl}}/medical-staff
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+1234567890",
+  "dateOfBirth": "1980-01-01",
+  "address": "123 Main St, City, Country",
+  "specialty": "CARDIOLOGY",
+  "degree": "MD",
+  "institution": "Medical University",
+  "dateObtained": "2005-05-15",
+  "licenseNumber": "MED12345",
+  "licenseExpiryDate": "2025-05-15",
+  "hireDate": "2010-01-15"
+}
+
+### Obtener todo el personal médico
+GET {{baseUrl}}/medical-staff
+Authorization: Bearer {{authToken}}
+
+### Obtener personal médico por ID
+GET {{baseUrl}}/medical-staff/123e4567-e89b-12d3-a456-426614174001
+Authorization: Bearer {{authToken}}
+
+### Obtener personal médico por especialidad
+GET {{baseUrl}}/medical-staff/specialty/CARDIOLOGY
+Authorization: Bearer {{authToken}}
+
+### Gestión de Pacientes (Patients)
+
+# Crear nuevo paciente
+POST {{baseUrl}}/patients
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@example.com",
+  "phoneNumber": "+1987654321",
+  "dateOfBirth": "1990-05-15",
+  "address": "789 Oak St, City, Country"
+}
+
+### Obtener todos los pacientes
+GET {{baseUrl}}/patients
+Authorization: Bearer {{authToken}}
+
+### Obtener paciente por ID
+GET {{baseUrl}}/patients/123e4567-e89b-12d3-a456-426614174000
+Authorization: Bearer {{authToken}}
+
+### Actualizar paciente
+PUT {{baseUrl}}/patients/123e4567-e89b-12d3-a456-426614174000
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@example.com",
+  "phoneNumber": "+1987654321",
+  "dateOfBirth": "1990-05-15",
+  "address": "789 Oak St, City, Country",
+  "medicalHistory": "Allergic to penicillin"
+}
+
+### Eliminar paciente
+DELETE {{baseUrl}}/patients/123e4567-e89b-12d3-a456-426614174000
+Authorization: Bearer {{authToken}}
+
+### Gestión de Slots (Scheduling)
+
+# Crear slot disponible
+POST {{baseUrl}}/scheduling/slots
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "doctorId": "123e4567-e89b-12d3-a456-426614174001",
+  "date": "2023-06-15",
+  "startTime": "10:00:00",
+  "endTime": "11:00:00"
+}
+
+### Obtener slots disponibles
+GET {{baseUrl}}/scheduling/slots?doctorId=123e4567-e89b-12d3-a456-426614174001&date=2023-06-15
+Authorization: Bearer {{authToken}}
+
+### Reservar slot
+PUT {{baseUrl}}/scheduling/slots/123e4567-e89b-12d3-a456-426614174002/book
+Authorization: Bearer {{authToken}}
+
+### Cancelar reserva de slot
+PUT {{baseUrl}}/scheduling/slots/123e4567-e89b-12d3-a456-426614174002/unbook
+Authorization: Bearer {{authToken}}
+
+### Gestión de Usuarios (Users)
+
+# Crear nuevo usuario
+POST {{baseUrl}}/users
+Content-Type: application/json
+#Authorization: Bearer {{authToken}}
+
+{
+  "username": "newuser",
+  "password": "password123",
+  "email": "newuser@example.com",
+  "roles": ["ROLE_DOCTOR", "ROLE_ADMIN"]
+}
+
+### Eliminar usuario
+DELETE {{baseUrl}}/users/123e4567-e89b-12d3-a456-426614174005
+Authorization: Bearer {{authToken}}

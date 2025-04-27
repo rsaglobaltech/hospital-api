@@ -1,0 +1,98 @@
+name: CD Infrastructure Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - feature
+          - staging
+          - prod
+      components:
+        description: 'Components to deploy'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - rabbitmq
+          - elasticsearch
+          - database
+
+jobs:
+  deploy-rabbitmq:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.components == 'all' || github.event.inputs.components == 'rabbitmq' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Deploy RabbitMQ
+        run: |
+          cd kubernetes/${{ github.event.inputs.environment }}
+          helm upgrade --install rabbitmq bitnami/rabbitmq \
+            --namespace infrastructure \
+            --create-namespace \
+            --values rabbitmq-values.yaml \
+            --wait
+
+  deploy-elasticsearch:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.components == 'all' || github.event.inputs.components == 'elasticsearch' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Deploy Elasticsearch
+        run: |
+          cd kubernetes/${{ github.event.inputs.environment }}
+          helm upgrade --install elasticsearch elastic/elasticsearch \
+            --namespace infrastructure \
+            --create-namespace \
+            --values elasticsearch-values.yaml \
+            --wait
+
+  deploy-database:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.components == 'all' || github.event.inputs.components == 'database' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Deploy PostgreSQL
+        run: |
+          cd kubernetes/${{ github.event.inputs.environment }}
+          helm upgrade --install postgresql bitnami/postgresql \
+            --namespace infrastructure \
+            --create-namespace \
+            --values postgresql-values.yaml \
+            --wait

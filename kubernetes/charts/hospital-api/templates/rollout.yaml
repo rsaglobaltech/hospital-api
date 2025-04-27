@@ -1,0 +1,91 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: hospital-api
+  labels:
+    app.kubernetes.io/name: hospital-api
+    app.kubernetes.io/instance: release-name
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hospital-api
+      app.kubernetes.io/instance: release-name
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hospital-api
+        app.kubernetes.io/instance: release-name
+    spec:
+      containers:
+        - name: hospital-api
+          image: ${DOCKER_HUB_USERNAME}/hospital-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: JDBC_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: hospital-api-secrets
+                  key: jdbcUrl
+            - name: JDBC_DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: hospital-api-secrets
+                  key: dbUsername
+            - name: JDBC_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hospital-api-secrets
+                  key: dbPassword
+            - name: ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: hospital-api-secrets
+                  key: adminUsername
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hospital-api-secrets
+                  key: adminPassword
+          livenessProbe:
+            httpGet:
+              path: /api/management/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /api/management/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+            requests:
+              cpu: 1000m
+              memory: 1Gi
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: {duration: 5m}
+        - setWeight: 40
+        - pause: {duration: 5m}
+        - setWeight: 60
+        - pause: {duration: 5m}
+        - setWeight: 80
+        - pause: {duration: 5m}
+      analysis:
+        templates:
+          - templateName: success-rate
+        args:
+          - name: service-name
+            value: hospital-api-metrics

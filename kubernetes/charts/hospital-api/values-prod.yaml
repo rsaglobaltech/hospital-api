@@ -1,0 +1,76 @@
+# Production values for hospital-api.
+# This is a YAML-formatted file.
+
+replicaCount: 3
+
+image:
+  repository: ${DOCKER_HUB_USERNAME}/hospital-api
+  tag: stable
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  hosts:
+    - host: api.hospital.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: hospital-api-prod-tls
+      hosts:
+        - api.hospital.example.com
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: prod
+
+secrets:
+  create: true
+  name: hospital-api-secrets
+  data:
+    jdbcUrl: "jdbc:postgresql://hospital-db.prod.svc.cluster.local:5432/hospitaldb"
+    dbUsername: "hospital_app"
+    dbPassword: "secure-prod-password"
+    adminUsername: "admin"
+    adminPassword: "secure-prod-admin-password"
+
+# Enable ArgoCD Rollout for production
+rollout:
+  enabled: true
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: {duration: 5m}
+        - setWeight: 40
+        - pause: {duration: 5m}
+        - setWeight: 60
+        - pause: {duration: 5m}
+        - setWeight: 80
+        - pause: {duration: 5m}
+      analysis:
+        templates:
+          - templateName: success-rate
+        args:
+          - name: service-name
+            value: hospital-api-metrics

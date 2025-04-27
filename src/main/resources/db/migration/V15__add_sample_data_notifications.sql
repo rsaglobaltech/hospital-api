@@ -1,0 +1,8 @@
+-- Sample notifications
+INSERT INTO notifications (id, recipient_id, recipient_type, channel, subject, content, status, sent_at, created_at, updated_at)
+VALUES 
+('11111111-1111-1111-1111-111111111112', '11111111-1111-1111-1111-111111111111', 'PATIENT', 'EMAIL', 'Appointment Reminder', 'Dear John Doe, this is a reminder for your appointment on 2023-06-15 at 10:00 AM with Dr. Robert Johnson.', 'SENT', '2023-06-14 10:00:00', '2023-06-14 09:00:00', '2023-06-14 10:00:00'),
+('22222222-2222-2222-2222-222222222223', '22222222-2222-2222-2222-222222222222', 'PATIENT', 'SMS', 'Appointment Reminder', 'Reminder: You have an appointment tomorrow at 2:00 PM with Dr. Emily Williams.', 'SENT', '2023-06-19 14:00:00', '2023-06-19 13:00:00', '2023-06-19 14:00:00'),
+('33333333-3333-3333-3333-333333333334', '33333333-3333-3333-3333-444444444444', 'PATIENT', 'EMAIL', 'Test Results Available', 'Dear Michael Johnson, your test results are now available. Please log in to your patient portal to view them.', 'PENDING', NULL, '2023-06-26 09:00:00', '2023-06-26 09:00:00'),
+('44444444-4444-4444-4444-444444444445', '44444444-4444-4444-4444-555555555555', 'PATIENT', 'SMS', 'Prescription Refill', 'Your prescription refill is ready for pickup at the hospital pharmacy.', 'FAILED', NULL, '2023-06-30 11:00:00', '2023-06-30 11:05:00'),
+('55555555-5555-5555-5555-555555555556', '33333333-3333-3333-3333-333333333333', 'MEDICAL_STAFF', 'EMAIL', 'New Patient Assigned', 'Dear Dr. Robert Johnson, a new patient has been assigned to you. Please check your schedule.', 'SENT', '2023-07-01 08:30:00', '2023-07-01 08:00:00', '2023-07-01 08:30:00');
