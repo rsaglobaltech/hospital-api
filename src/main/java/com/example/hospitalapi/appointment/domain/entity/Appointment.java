@@ -1,5 +1,6 @@
 package com.example.hospitalapi.appointment.domain.entity;
 
+import com.example.hospitalapi.appointment.domain.event.AppointmentCreatedEvent;
 import com.example.hospitalapi.appointment.domain.valueobject.AppointmentId;
 import com.example.hospitalapi.appointment.domain.valueobject.AppointmentNotes;
 import com.example.hospitalapi.appointment.domain.valueobject.AppointmentReason;
@@ -25,7 +26,7 @@ public class Appointment extends AggregateRoot {
     private AppointmentNotes notes;
     private AppointmentStatus status;
 
-    public Appointment(AppointmentId id, PatientId patientId, DoctorId doctorId, 
+    public Appointment(AppointmentId id, PatientId patientId, DoctorId doctorId,
                       LocalDateTime startTime, LocalDateTime endTime, String reasonText) {
         if (id == null) {
             throw new IllegalArgumentException("Appointment ID cannot be null");
@@ -44,6 +45,9 @@ public class Appointment extends AggregateRoot {
         this.reason = new AppointmentReason(reasonText);
         this.notes = new AppointmentNotes("");
         this.status = AppointmentStatus.SCHEDULED;
+
+        // Register domain event
+        registerDomainEvent(new AppointmentCreatedEvent(this));
     }
 
     public void updateTimes(LocalDateTime startTime, LocalDateTime endTime) {

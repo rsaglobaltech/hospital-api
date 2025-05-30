@@ -1,4 +1,4 @@
-package com.example.hospitalapi.analytics.application.command;
+package com.example.hospitalapi.analytics.application.query;
 
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.util.Map;
 @Data
 @Builder
 public class AdhocQueryResponse {
-    
+
     private final String queryId;
     private final String query;
     private final List<Map<String, Object>> results;

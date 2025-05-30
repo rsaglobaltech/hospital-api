@@ -1,5 +1,7 @@
 package com.example.hospitalapi.pharmacy.application.command;
 
+import com.example.hospitalapi.shared.domain.bus.Command;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,6 +10,6 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class DeletePrescriptionCommand {
+public class DeletePrescriptionCommand implements Command {
     private final String prescriptionId;
 }

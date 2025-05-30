@@ -2,10 +2,12 @@ package com.example.hospitalapi.appointment.application.command;
 
 import com.example.hospitalapi.appointment.domain.entity.Appointment;
 import com.example.hospitalapi.appointment.domain.repository.AppointmentRepository;
+import com.example.hospitalapi.appointment.domain.event.AppointmentCreatedEvent;
 import com.example.hospitalapi.appointment.domain.valueobject.AppointmentId;
 import com.example.hospitalapi.patient.domain.exception.PatientNotFoundException;
 import com.example.hospitalapi.patient.domain.repository.PatientRepository;
 import com.example.hospitalapi.patient.domain.valueobject.PatientId;
+import com.example.hospitalapi.shared.domain.event.EventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,11 +31,15 @@ class CreateAppointmentCommandHandlerTest {
     @Mock
     private PatientRepository patientRepository;
 
+    @Mock
+    private EventPublisher eventPublisher;
+
     private CreateAppointmentCommandHandler handler;
 
     private final UUID patientUuid = UUID.randomUUID();
     private final String patientId = patientUuid.toString();
-    private final String doctorId = "doctor-123";
+    private final UUID doctorUuid = UUID.randomUUID();
+    private final String doctorId = doctorUuid.toString();
     private final LocalDateTime startTime = LocalDateTime.now().plusHours(1);
     private final LocalDateTime endTime = startTime.plusHours(1);
     private final String reason = "Annual check-up";
@@ -41,7 +47,7 @@ class CreateAppointmentCommandHandlerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        handler = new CreateAppointmentCommandHandler(appointmentRepository, patientRepository);
+        handler = new CreateAppointmentCommandHandler(appointmentRepository, patientRepository, eventPublisher);
     }
 
     @Test
@@ -62,6 +68,10 @@ class CreateAppointmentCommandHandlerTest {
         when(savedAppointment.getId()).thenReturn(expectedAppointmentId);
         when(appointmentRepository.save(any(Appointment.class))).thenReturn(savedAppointment);
 
+        // Mock domain events
+        AppointmentCreatedEvent mockEvent = mock(AppointmentCreatedEvent.class);
+        when(savedAppointment.getDomainEvents()).thenReturn(java.util.Collections.singletonList(mockEvent));
+
         // Act
         AppointmentId result = handler.handle(command);
 
@@ -76,6 +86,10 @@ class CreateAppointmentCommandHandlerTest {
 
         Appointment capturedAppointment = appointmentCaptor.getValue();
         assertNotNull(capturedAppointment);
+
+        // Verify events are published
+        verify(eventPublisher).publish(any(AppointmentCreatedEvent.class));
+        verify(savedAppointment).clearDomainEvents();
     }
 
     @Test
@@ -95,5 +109,6 @@ class CreateAppointmentCommandHandlerTest {
         assertThrows(PatientNotFoundException.class, () -> handler.handle(command));
         verify(patientRepository).existsById(any(PatientId.class));
         verify(appointmentRepository, never()).save(any(Appointment.class));
+        verify(eventPublisher, never()).publish(any());
     }
 }

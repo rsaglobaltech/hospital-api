@@ -1,5 +1,7 @@
 package com.example.hospitalapi.pharmacy.application.command;
 
+import com.example.hospitalapi.shared.domain.bus.Command;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 @Builder
-public class UpdateDispensationCommand {
+public class UpdateDispensationCommand implements Command {
     private final String dispensationId;
     private final String notes;
 }

@@ -1,6 +1,6 @@
 package com.example.hospitalapi.analytics.infrastructure.rest;
 
-import com.example.hospitalapi.analytics.application.command.AdhocQueryResponse;
+import com.example.hospitalapi.analytics.application.query.AdhocQueryResponse;
 import com.example.hospitalapi.analytics.application.command.ExecuteAdhocQueryCommand;
 import com.example.hospitalapi.analytics.application.query.*;
 import com.example.hospitalapi.analytics.infrastructure.rest.request.AdhocQueryRequest;
@@ -73,7 +73,7 @@ public class AnalyticsController {
 
     @PostMapping("/adhoc-queries")
     @Operation(
-            summary = "Execute an ad-hoc query", 
+            summary = "Execute an ad-hoc query",
             description = "Executes an ad-hoc query with parameters (requires special permissions)",
             security = @SecurityRequirement(name = "bearerAuth")
     )
