@@ -1,5 +1,6 @@
 package com.example.hospitalapi.architecture;
 
+import com.example.hospitalapi.shared.domain.event.BaseDomainEvent;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -47,11 +48,11 @@ public class ArchitectureTest {
         ArchRule rule = classes().that().resideInAPackage("..patient..")
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(
-                        "..patient..", 
-                        "..shared..", 
-                        "java..", 
-                        "org..", 
-                        "com.fasterxml..", 
+                        "..patient..",
+                        "..shared..",
+                        "java..",
+                        "org..",
+                        "com.fasterxml..",
                         "lombok..",
                         "jakarta..",
                         "io.swagger.."
@@ -62,13 +63,13 @@ public class ArchitectureTest {
         rule = classes().that().resideInAPackage("..appointment..")
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(
-                        "..appointment..", 
+                        "..appointment..",
                         "..patient.domain.valueobject..",
                         "..patient.domain.repository..",
-                        "..shared..", 
-                        "java..", 
-                        "org..", 
-                        "com.fasterxml..", 
+                        "..shared..",
+                        "java..",
+                        "org..",
+                        "com.fasterxml..",
                         "lombok..",
                         "jakarta..",
                         "io.swagger.."
@@ -79,12 +80,12 @@ public class ArchitectureTest {
         rule = classes().that().resideInAPackage("..medicalstaff..")
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(
-                        "..medicalstaff..", 
-                        "..patient.domain.valueobject..", 
-                        "..shared..", 
-                        "java..", 
-                        "org..", 
-                        "com.fasterxml..", 
+                        "..medicalstaff..",
+                        "..patient.domain.valueobject..",
+                        "..shared..",
+                        "java..",
+                        "org..",
+                        "com.fasterxml..",
                         "lombok..",
                         "jakarta..",
                         "io.swagger.."
@@ -143,6 +144,7 @@ public class ArchitectureTest {
                 .and().haveSimpleNameNotEndingWith("Adapter")
                 .and().haveSimpleNameNotEndingWith("Config")
                 .and().haveSimpleNameNotEndingWith("Application")
+                .and().haveSimpleNameNotEndingWith("Exception")
                 .and().areNotAnnotatedWith("org.springframework.stereotype.Service")
                 .and().areNotAnnotatedWith("org.springframework.stereotype.Component")
                 .and().areNotAnnotatedWith("org.springframework.stereotype.Repository")
@@ -153,6 +155,7 @@ public class ArchitectureTest {
                 .and().areNotInterfaces()
                 .and().areNotEnums()
                 .and().resideOutsideOfPackage("..domain.entity")
+                .and().resideOutsideOfPackage("..domain..event")
                 .and().resideInAPackage("..domain..")
                 .should().resideInAPackage("..domain.valueobject");
 

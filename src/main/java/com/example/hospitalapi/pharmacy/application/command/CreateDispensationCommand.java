@@ -1,6 +1,9 @@
 package com.example.hospitalapi.pharmacy.application.command;
 
+import com.example.hospitalapi.shared.domain.bus.Command;
+
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -11,13 +14,14 @@ import java.util.List;
  */
 @Getter
 @Builder
-public class CreateDispensationCommand {
+@Data
+public class CreateDispensationCommand implements Command {
     private final String prescriptionId;
     private final String patientId;
     private final String pharmacistId;
     private final List<DispensationItemCommand> items;
     private final String notes;
-    
+
     /**
      * Command for a dispensation item
      */

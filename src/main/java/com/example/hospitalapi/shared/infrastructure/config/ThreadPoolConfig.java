@@ -13,7 +13,7 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 public class ThreadPoolConfig {
-    
+
     /**
      * Thread pool for command execution
      */
@@ -27,7 +27,7 @@ public class ThreadPoolConfig {
         executor.initialize();
         return executor;
     }
-    
+
     /**
      * Thread pool for query execution
      */
@@ -38,6 +38,20 @@ public class ThreadPoolConfig {
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("query-");
+        executor.initialize();
+        return executor;
+    }
+
+    /**
+     * Thread pool for event processing
+     */
+    @Bean(name = "eventExecutor")
+    public Executor eventExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(4);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("event-");
         executor.initialize();
         return executor;
     }

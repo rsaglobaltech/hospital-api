@@ -1,5 +1,7 @@
 package com.example.hospitalapi.pharmacy.application.command;
 
+import com.example.hospitalapi.shared.domain.bus.Command;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,12 +13,12 @@ import java.util.List;
  */
 @Getter
 @Builder
-public class UpdatePrescriptionCommand {
+public class UpdatePrescriptionCommand implements Command {
     private final String prescriptionId;
     private final LocalDate expirationDate;
     private final List<PrescriptionItemCommand> items;
     private final String notes;
-    
+
     /**
      * Command for a prescription item
      */

@@ -5,22 +5,26 @@ import com.example.hospitalapi.shared.domain.event.EventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * Synchronous implementation of EventPublisher using Spring's ApplicationEventPublisher
- * This is kept for backward compatibility but AsyncSpringEventPublisher should be used instead
+ * Asynchronous implementation of EventPublisher using Spring's ApplicationEventPublisher.
+ * This is the primary implementation that should be used for all event publishing.
  */
-@Component("syncEventPublisher")
+@Component
+@Primary
 @RequiredArgsConstructor
 @Slf4j
-public class SpringEventPublisher implements EventPublisher {
+public class AsyncSpringEventPublisher implements EventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
+    @Async("eventExecutor")
     public void publish(DomainEvent event) {
-        log.debug("Synchronously publishing event: {}", event.getClass().getSimpleName());
+        log.debug("Asynchronously publishing event: {}", event.getClass().getSimpleName());
         applicationEventPublisher.publishEvent(event);
     }
 }

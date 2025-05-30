@@ -1,5 +1,6 @@
 package com.example.hospitalapi.analytics.application.command;
 
+import com.example.hospitalapi.analytics.application.query.AdhocQueryResponse;
 import com.example.hospitalapi.analytics.domain.repository.AdhocQueryRepository;
 import com.example.hospitalapi.shared.domain.bus.CommandHandler;
 import lombok.RequiredArgsConstructor;
@@ -32,22 +33,22 @@ public class ExecuteAdhocQueryCommandHandler implements CommandHandler<ExecuteAd
         if (!adhocQueryRepository.validateQuery(command.getQuery())) {
             throw new IllegalArgumentException("Invalid query: " + command.getQuery());
         }
-        
+
         // Create a query ID
         String queryId = UUID.randomUUID().toString();
-        
+
         // Record start time
         long startTime = System.currentTimeMillis();
-        
+
         // Execute query
         List<Map<String, Object>> results = adhocQueryRepository.executeQuery(
                 command.getQuery(),
                 command.getParameters()
         );
-        
+
         // Calculate execution time
         long executionTime = System.currentTimeMillis() - startTime;
-        
+
         // Create response
         return AdhocQueryResponse.builder()
                 .queryId(queryId)

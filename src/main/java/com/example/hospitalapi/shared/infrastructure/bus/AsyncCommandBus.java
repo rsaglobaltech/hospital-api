@@ -25,7 +25,8 @@ public class AsyncCommandBus implements CommandBus {
     private final Executor executor;
     private final Map<Class<? extends Command>, CommandHandler<? extends Command, ?>> handlers;
 
-    public AsyncCommandBus(ApplicationContext context, @Qualifier("commandExecutor") Executor executor) {
+    public AsyncCommandBus(ApplicationContext context,
+                           @Qualifier("commandExecutor") Executor executor) {
         this.executor = executor;
         this.handlers = new HashMap<>();
 

@@ -1,5 +1,7 @@
 package com.example.hospitalapi.pharmacy.application.command;
 
+import com.example.hospitalapi.shared.domain.bus.Command;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,7 +12,7 @@ import java.math.BigDecimal;
  */
 @Getter
 @Builder
-public class CreateMedicationCommand {
+public class CreateMedicationCommand implements Command {
     private final String name;
     private final String description;
     private final String dosageForm;
